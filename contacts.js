@@ -1,10 +1,12 @@
+import { readFile } from 'fs';
+
 const fs = require('fs');
 const path = require('path');
 
 const contactsPath = path.basename('./db/contacts.json')
 
 const listContacts = ()  => {
-  // ...твой код
+  fs.readFile()
 }
 
 const getContactById = (contactId) => {
