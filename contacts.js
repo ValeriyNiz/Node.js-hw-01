@@ -1,22 +1,60 @@
-import { readFile } from 'fs';
+const { v4: uuidv4 } = require('uuid');
+const path = require("path");
+const fs = require("fs").promises;
 
-const fs = require('fs');
-const path = require('path');
 
-const contactsPath = path.basename('./db/contacts.json')
+const contactsPath = path.resolve("db", "contacts.json");
 
-const listContacts = ()  => {
-  fs.readFile()
+async function listContacts() {
+  try {
+    const contacts = JSON.parse(await fs.readFile(contactsPath, "utf-8"));
+    return contacts;
+  } catch (error) {
+    throw error;
+  }
 }
 
-const getContactById = (contactId) => {
-  // ...твой код
+async function getContactById(contactId) {
+  try {
+    const contact = JSON.parse(await fs.readFile(contactsPath, "utf-8")).filter(
+      (contact) => contact.id === contactId
+    );
+    return contact;
+  } catch (error) {
+    throw error;
+  }
 }
 
-const removeContact = (contactId) => {
-  // ...твой код
+async function removeContact(contactId) {
+  try {
+    const contacts = await listContacts();
+    const index = contacts.findIndex((contact) => contact.id === contactId);
+    if (index === -1) {
+      return null;
+    }
+    const [removedContact] = contacts.splice(index, 1);
+    await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
+    return removedContact;
+  } catch (error) {
+    throw error;
+  }
 }
 
-const addContact = (name, email, phone) => {
-  // ...твой код
+async function addContact(name, email, phone) {
+  try {
+    const contacts = await listContacts();
+    const newContact = { id: uuidv4(), name, email, phone };
+    contacts.push(newContact);
+    await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
+    return newContact;
+  } catch (error) {
+    throw error;
+  }
 }
+
+module.exports = {
+  listContacts,
+  getContactById,
+  removeContact,
+  addContact,
+};
